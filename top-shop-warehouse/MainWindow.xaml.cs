@@ -22,6 +22,12 @@ namespace top_shop_warehouse
         public ItemWarehouse? CurrentItemWarehouse =>
             ItemWarehouses.FirstOrDefault(x => x.Item == CurrentItem);
         public ObservableCollection<Provider> Providers { get; set; }
+        public Warehouse CurrentWarehouse { get; set; }
+        public Provider? CurrentProvider { get; set; }
+        public Item? CurrentItem { get; set; }
+        public ItemWarehouse? CurrentItemWarehouse =>
+            ItemWarehouses.FirstOrDefault(x => x.Item == CurrentItem);
+        public ObservableCollection<Provider> Providers { get; set; } 
         public ObservableCollection<Item> Items { get; set; }
         public ObservableCollection<ItemType> ItemTypes { get; set; }
         private List<ItemWarehouse> ItemWarehouses { get; set; }
@@ -48,8 +54,8 @@ namespace top_shop_warehouse
         {
             DataGrid datagrid = (DataGrid)sender;
             Item? item = datagrid.SelectedItem as Item;
-            if (item is not null && ItemWarehouses.FirstOrDefault(x => x.Item == item) is null)
-                if (db.Entry(item).State == EntityState.Unchanged || db.Entry(item).State == EntityState.Modified)
+            if (item is not null && ItemWarehouses.FirstOrDefault(x => x.Item == item) is null) // todo unique index ItemWarehouse based on Item and Warehouse
+                if(db.Entry(item).State == EntityState.Unchanged || db.Entry(item).State == EntityState.Modified)
                 {
                     var newItemWarehouse = new ItemWarehouse()
                     {
@@ -92,6 +98,15 @@ namespace top_shop_warehouse
                     _itemsCommiting = false;
                     datagrid.Items.Refresh();
                 }
+                dynamic item = e.Row.Item; //todo: fix this crutch
+
+                if (item.Id == Guid.Empty)
+                    db.Add(item);
+                else
+                    db.Update(item);
+                db.SaveChanges();
+                _itemsCommiting = false;
+                datagrid.Items.Refresh();
             }
         }
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
