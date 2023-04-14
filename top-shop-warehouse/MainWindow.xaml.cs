@@ -22,12 +22,6 @@ namespace top_shop_warehouse
         public ItemWarehouse? CurrentItemWarehouse =>
             ItemWarehouses.FirstOrDefault(x => x.Item == CurrentItem);
         public ObservableCollection<Provider> Providers { get; set; }
-        public Warehouse CurrentWarehouse { get; set; }
-        public Provider? CurrentProvider { get; set; }
-        public Item? CurrentItem { get; set; }
-        public ItemWarehouse? CurrentItemWarehouse =>
-            ItemWarehouses.FirstOrDefault(x => x.Item == CurrentItem);
-        public ObservableCollection<Provider> Providers { get; set; } 
         public ObservableCollection<Item> Items { get; set; }
         public ObservableCollection<ItemType> ItemTypes { get; set; }
         private List<ItemWarehouse> ItemWarehouses { get; set; }
@@ -98,13 +92,6 @@ namespace top_shop_warehouse
                     _itemsCommiting = false;
                     datagrid.Items.Refresh();
                 }
-                dynamic item = e.Row.Item; //todo: fix this crutch
-
-                if (item.Id == Guid.Empty)
-                    db.Add(item);
-                else
-                    db.Update(item);
-                db.SaveChanges();
                 _itemsCommiting = false;
                 datagrid.Items.Refresh();
             }
